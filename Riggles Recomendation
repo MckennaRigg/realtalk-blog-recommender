@@ -1,0 +1,48 @@
+```python
+import feedparser
+
+# Function to fetch blog posts from the RSS feed
+def fetch_blog_posts(rss_feed_url):
+    feed = feedparser.parse(rss_feed_url)
+    blog_posts = []
+    
+    for entry in feed.entries:
+        post = {
+            'title': entry.title,
+            'summary': entry.summary,
+            'link': entry.link,
+        }
+        blog_posts.append(post)
+    
+    return blog_posts
+
+# Function to recommend blog posts based on user input
+def recommend_blog_posts(user_interests, blog_posts):
+    recommended_posts = []
+    
+    for post in blog_posts:
+        relevance_score = 0
+        for interest in user_interests:
+            if interest.lower() in post['title'].lower() or interest.lower() in post['summary'].lower():
+                relevance_score += 1
+        
+        if relevance_score > 0:
+            recommended_posts.append((post, relevance_score))
+    
+    recommended_posts.sort(key=lambda x: x[1], reverse=True)
+    return recommended_posts[:2]  # Return top 2 relevant posts
+
+# Main function
+if __name__ == '__main__':
+    rss_feed_url = 'https://www.getrealwithriggles.com/real-talk-with-riggles?format=rss'
+    user_interests = ['marketing', 'AI']  # Example user interests
+    blog_posts = fetch_blog_posts(rss_feed_url)
+    recommended_posts = recommend_blog_posts(user_interests, blog_posts)
+    
+    for post, relevance_score in recommended_posts:
+        print(f'Relevance Score: {relevance_score}')
+        print(f'Title: {post["title"]}')
+        print(f'Summary: {post["summary"]}')
+        print(f'Link: {post["link"]}')
+        print('--------------------')
+```
